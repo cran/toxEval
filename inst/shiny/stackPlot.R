@@ -20,7 +20,7 @@ stackBarGroup_create <- reactive({
                                      levels=sitesOrdered[sitesOrdered %in% unique(chem_site$`Short Name`)])
   }
 
-  include_legend <- !(catType == 2)
+  top_num <- ifelse(catType == 2, 5, NA)
 
   category <- c("Biological","Chemical","Chemical Class")[catType]
 
@@ -29,9 +29,10 @@ stackBarGroup_create <- reactive({
                                category = category,
                                mean_logic = mean_logic,
                                sum_logic = sum_logic,
-                               include_legend = include_legend,
+                               include_legend = TRUE,
                                font_size = ifelse(catType == 2, 14, 17),
-                               title = genericTitle())
+                               title = genericTitle(),
+                               top_num = top_num)
   
   shinyAce::updateAceEditor(session, editorId = "barCode_out", value = barCode() )
   
@@ -53,11 +54,9 @@ output$downloadStackPlot <- downloadHandler(
   filename = "stackPlot.png",
   
   content = function(file) {
-    device <- function(..., width, height) {
-      grDevices::png(..., width = width, height = height,
-                     res = 300, units = "in")
-    }
-    ggsave(file, plot = stackBarGroup_create(), device = device)
+    ggplot2::ggsave(file, plot = stackBarGroup_create(),  
+                    device = "png", width = 11,
+                    height = 9)
   }
 )
 
@@ -74,24 +73,10 @@ barCode <- reactive({
   
   catType = as.numeric(input$radioMaxGroup)
   category <- c("Biological","Chemical","Chemical Class")[catType]
-  include_legend <- !(catType == 2)
+  top_num <- ifelse(catType == 2, 5, NA)
   mean_logic <- as.logical(input$meanEAR)
   sum_logic <- as.logical(input$sumEAR)
-  
-  if(!sum_logic){
-    stackPlotCode <- paste0(rCodeSetup(),"
-# To re-order the x-axis, 
-# Convert tox_list$chem_site$`Short Name` to a factor,
-# and re-order the 'levels' of that factor
-stack_plot <- plot_tox_stacks(chemical_summary, 
-                  chem_site = tox_list$chem_site,
-                  category = '",category,"',
-                  mean_logic = ",mean_logic,",
-                  sum_logic = FALSE,
-                  title = '",genericTitle(),"',
-                  include_legend = ",include_legend,")
-stack_plot")    
-  } else {
+
   stackPlotCode <- paste0(rCodeSetup(),"
 # To re-order the x-axis, 
 # Convert tox_list$chem_site$`Short Name` to a factor,
@@ -101,10 +86,24 @@ stack_plot <- plot_tox_stacks(chemical_summary,
                   category = '",category,"',
                   mean_logic = ",mean_logic,",
                   title = '",genericTitle(),"',
-                  include_legend = ",include_legend,")
-stack_plot")    
-  }
+                  include_legend = TRUE,
+                  top_num = ",top_num)
 
+  if(!sum_logic){
+    stackPlotCode <- paste0(stackPlotCode,",
+                            sum_logic = FALSE)")
+  } else {
+    stackPlotCode <- paste0(stackPlotCode,")")
+  }
+    
+  stackPlotCode <- paste0(stackPlotCode,"
+stack_plot
+# To save:
+# Fiddle with height and width (in inches) for best results:
+# Change file name extension to save as png.
+# ggplot2::ggsave(stack_plot, file='stack.pdf',
+#                        height = 5,
+#                        width = 7)")
   
   return(stackPlotCode)
   

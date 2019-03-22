@@ -1,7 +1,6 @@
 toxEval <img src="man/figures/logo.png" alt="toxEval" height="150px" align="right" />
 =====================================================================================
 
-
 The `toxEval` R-package includes a set of functions to analyze, visualize, and organize measured concentration data as it relates to <https://www.epa.gov/chemical-research/toxicity-forecasting> or other user-selected chemical-biological interaction benchmark data such as water quality criteria. The intent of these analyses is to develop a better understanding of the potential biological relevance of environmental chemistry data. Results can be used to prioritize which chemicals at which sites may be of greatest concern. These methods are meant to be used as a screening technique to predict potential for biological influence from chemicals that ultimately need to be validated with direct biological assays.
 
 The functions within this package allow great flexibly for exploring the potential biological affects of measured chemicals. Also included in the package is a browser-based application made from the `Shiny` R-package (the app). The app is based on functions within the R-package and includes many convenient analyses and visualization options for users to choose. Use of the functions within the R-package allows for additional flexibility within the functions beyond what the app offers and provides options for the user to interact more directly with the data. The overview in this document focuses on the R-package.
@@ -148,22 +147,6 @@ The following link walks you through an installation of R and RStudio:
 
 [Installation Instructions](https://owi.usgs.gov/R/training-curriculum/installr/)
 
-If you follow those instructions exactly, you should have the USGS R repository (GRAN) added to your R profile. If that step doesn't ring a bell, paste the following into your R console:
-
-``` r
-rprofile_path = file.path(Sys.getenv("HOME"), ".Rprofile")
-write('\noptions(repos=c(getOption(\'repos\'),
-    CRAN=\'https://cloud.r-project.org\',
-    USGS=\'https://owi.usgs.gov/R\'))\n',
-      rprofile_path, 
-      append =  TRUE)
-
-cat('Your Rprofile has been updated to include GRAN.
-    Please restart R for changes to take effect.')
-```
-
-*RESTART RSTUDIO!*
-
 Useful links:
 
 -   [Download R Windows](https://cran.r-project.org/bin/windows/base/)
@@ -173,10 +156,23 @@ Useful links:
 Installation of toxEval
 -----------------------
 
-This section should also only have to be done once. It assumes the USGS R repository (GRAN) was added to your R profile as described above.
+To install the toxEval package, you must be using R 3.0 or greater and run the following command:
 
 ``` r
 install.packages("toxEval")
+```
+
+To get inter-CRAN release updates, use the command:
+
+``` r
+install.packages("toxEval",repos="https://owi.usgs.gov/R")
+```
+
+To get cutting-edge changes, install from GitHub using the `devtools` packages:
+
+``` r
+library(devtools)
+install_github("USGS-R/toxEval")
 ```
 
 Regularly, it is a good idea to update *ALL* your packages in R. If using RStudio, this is quite easy, there's an Update button in the "Packages" tab. This checks CRAN and GRAN for updates. It is a good idea to click this update regularly.

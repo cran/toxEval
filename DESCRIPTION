@@ -2,7 +2,7 @@ Package: toxEval
 Type: Package
 Title: Exploring Biological Relevance of Environmental Chemistry
         Observations
-Version: 1.0.3
+Version: 1.0.4
 Authors@R: c(person("Laura", "DeCicco", 
                      role = c("aut","cre"),
                      email = "ldecicco@usgs.gov",
@@ -45,7 +45,7 @@ LazyLoad: yes
 LazyData: yes
 RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2019-03-04 17:18:42 UTC; ldecicco
+Packaged: 2019-03-22 21:39:33 UTC; ldecicco
 Author: Laura DeCicco [aut, cre] (<https://orcid.org/0000-0002-3915-9487>),
   Steven Corsi [aut] (<https://orcid.org/0000-0003-0583-5536>),
   Daniel Villeneuve [aut] (<https://orcid.org/0000-0003-2801-0203>),
@@ -55,4 +55,4 @@ Author: Laura DeCicco [aut, cre] (<https://orcid.org/0000-0002-3915-9487>),
   Dalma Martinovic [rev] (Reviewed for USGS)
 Maintainer: Laura DeCicco <ldecicco@usgs.gov>
 Repository: CRAN
-Date/Publication: 2019-03-06 16:40:03 UTC
+Date/Publication: 2019-03-22 22:00:03 UTC

@@ -11,6 +11,6 @@ knitr::opts_chunk$set(echo = TRUE,
 #  library(toxEval)
 #  explore_endpoints()
 
-## ---- eval=FALSE------------------------------------------
-#  citation(package = "toxEval")
+## ---------------------------------------------------------
+citation(package = "toxEval")
 
