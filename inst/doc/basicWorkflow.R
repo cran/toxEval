@@ -100,7 +100,7 @@ plot_tox_heatmap(chemical_summary,
 #                  category = "Chemical")
 
 ## ----endpoints, warning=FALSE-----------------------------
-plot_tox_endpoints(chemical_summary, 
+plot_tox_endpoints(chemical_summary, top_num = 10,
                     category = "Biological", 
                     filterBy = "Cell Cycle")
 

@@ -24,7 +24,7 @@
 #' @param chemical_summary Data frame from \code{\link{get_chemical_summary}}.
 #' @param category Character. Either "Biological", "Chemical Class", or "Chemical".
 #' @param chem_site Data frame with at least columns SiteID, site_grouping, and Short Name.
-#' @param mean_logic Logical.  \code{TRUE} displays the mean sample from each site,
+#' @param mean_logic Logical. \code{TRUE} displays the mean sample from each site,
 #' \code{FALSE} displays the maximum sample from each site.
 #' @param sum_logic Logical. \code{TRUE} sums the EARs in a specified grouping,
 #' \code{FALSE} does not. \code{FALSE} may be better for traditional benchmarks as
@@ -32,7 +32,8 @@
 #' @param manual_remove Vector of categories to remove.
 #' @param include_legend Logical. Used to include legend or not.
 #' @param font_size Numeric value to adjust the axis font size.
-#' @param title Character title for plot. 
+#' @param title Character title for plot.
+#' @param y_label Character for x label. Default is NA which produces an automatic label.
 #' @param top_num Integer number to include in the graph. If NA, all 
 #' data will be included.
 #' @export
@@ -58,7 +59,12 @@
 #' plot_tox_stacks(chemical_summary, tox_list$chem_site, "Biological")   
 #' plot_tox_stacks(chemical_summary, tox_list$chem_site, "Chemical Class")
 #' plot_tox_stacks(chemical_summary, tox_list$chem_site, "Chemical", include_legend = FALSE) 
-#' plot_tox_stacks(chemical_summary, tox_list$chem_site, "Chemical", top_num = 5)
+#' plot_tox_stacks(chemical_summary, tox_list$chem_site, "Chemical", top_num = 5, y_label = "EAR")
+#' 
+#' single_site <- dplyr::filter(chemical_summary, site == "USGS-04024000")
+#' plot_tox_stacks(single_site, tox_list$chem_site, "Chemical", top_num = 5)
+#' plot_tox_stacks(single_site, chem_site = tox_list$chem_site, 
+#'                category = "Chemical", top_num = 5, y_label = "EAR")
 plot_tox_stacks <- function(chemical_summary, 
                             chem_site,
                             category = "Biological",
@@ -68,9 +74,14 @@ plot_tox_stacks <- function(chemical_summary,
                             include_legend = TRUE, 
                             font_size = NA,
                             title = NA,
+                            y_label = NA,
                             top_num = NA){
   
   match.arg(category, c("Biological","Chemical Class","Chemical"))
+  
+  if(nrow(chemical_summary) == 0){
+    stop("No rows in the chemical_summary data frame")
+  }
   
   site <- EAR <- sumEAR <- meanEAR <- groupCol <- nonZero <- maxEAR <- ".dplyr"
   SiteID <- site_grouping <- n <- index <- `Short Name` <- count <- x <- y <- label <- ".dplyr"
@@ -97,13 +108,16 @@ plot_tox_stacks <- function(chemical_summary,
     } 
   }
 
+  # Since this is linear scale...the 0's are good!
+  graphData$meanEAR[is.na(graphData$meanEAR)] <- 0
+  
   counts <- chemical_summary %>%
-    dplyr::select(site, date) %>%
-    dplyr::distinct() %>%
-    dplyr::group_by(site) %>%
-    dplyr::summarize(count = dplyr::n()) %>%
-    dplyr::left_join(dplyr::select(chem_site, site=SiteID, `Short Name`, site_grouping), by="site") %>%
-    dplyr::select(-site)
+    select(site, date) %>%
+    distinct() %>%
+    group_by(site) %>%
+    summarize(count = n()) %>%
+    left_join(select(chem_site, site=SiteID, `Short Name`, site_grouping), by="site") %>%
+    select(-site)
 
   siteToFind <- unique(chemical_summary$shortName)
 
@@ -118,11 +132,15 @@ plot_tox_stacks <- function(chemical_summary,
   single_site <- length(siteToFind) == 1
   
   if(!single_site){
-    
-    y_label <- fancyLabels(category, mean_logic, sum_logic, single_site, sep = TRUE, include_site = FALSE)
+
+    if(is.na(y_label)){
+      y_label <- fancyLabels(category, mean_logic, sum_logic, single_site, sep = TRUE, include_site = FALSE)
+    } else {
+      names(y_label) <- "y_label"
+    }
     
     graphData <- graphData %>%
-      dplyr::left_join(chem_site[, c("SiteID", "site_grouping", "Short Name")],
+      left_join(chem_site[, c("SiteID", "site_grouping", "Short Name")],
                 by=c("site"="SiteID"))
     
     placement <- -0.05*diff(range(graphData$meanEAR))
@@ -144,17 +162,17 @@ plot_tox_stacks <- function(chemical_summary,
       orig_cat <- levels(graphData$category)
       
       top_data <- graphData %>%
-        dplyr::group_by(category) %>%
-        dplyr::summarize(maxEAR = max(meanEAR, na.rm = TRUE)) %>%
-        dplyr::arrange(dplyr::desc(maxEAR)) %>%
-        dplyr::top_n(maxEAR, n=top_num) %>%
-        dplyr::mutate(category = as.character(category)) %>%
-        dplyr::pull(category)
+        group_by(category) %>%
+        summarize(maxEAR = max(meanEAR, na.rm = TRUE)) %>%
+        arrange(desc(maxEAR)) %>%
+        top_n(maxEAR, n=top_num) %>%
+        mutate(category = as.character(category)) %>%
+        pull(category)
       
       other_text <- paste0("Others (",length(orig_cat)-top_num,")")
       
       graphData <- graphData %>%
-        dplyr::mutate(category = as.character(category),
+        mutate(category = as.character(category),
                       category = ifelse(category %in% top_data,
                                         category, other_text),
                       category = factor(category, levels = c(top_data, other_text)))
@@ -164,32 +182,47 @@ plot_tox_stacks <- function(chemical_summary,
     upperPlot <- ggplot(graphData, 
                         aes(x=`Short Name`, y=meanEAR, fill = category)) +
       theme_minimal() +
-      xlab("") +
-      ylab(y_label[["y_label"]]) +
       facet_grid(. ~ site_grouping, scales="free", space="free") +
-      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))+
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+            axis.title.x = element_blank()) +
       geom_text(data = counts, 
                 aes(label = count, x=`Short Name`,y = placement), 
-                size=ifelse(is.na(font_size),3,0.30*font_size),inherit.aes = FALSE) +
+                size=ifelse(is.na(font_size), 3, 0.30*font_size), inherit.aes = FALSE) +
       geom_text(data = label_samples,hjust=1,
-                aes(x=x,y=y,label=label),
-                size=ifelse(is.na(font_size),2,0.25*font_size),inherit.aes = FALSE) +
-      labs(caption = y_label[["caption"]])  
+                aes(x = x, y = y,label = label),
+                size = ifelse(is.na(font_size),2, 0.25*font_size), inherit.aes = FALSE) 
+    
+    if(!isTRUE(y_label[["y_label"]] == "")){
+      upperPlot <- upperPlot +
+        ylab(y_label[["y_label"]])
+      
+      if("caption" %in% names(y_label)){
+        upperPlot <- upperPlot +
+          labs(caption = y_label[["caption"]]) 
+      }
+    } else {
+      upperPlot <- upperPlot +
+        theme(axis.title.y = element_blank())
+    }
 
   } else {
-
-    y_label <- "EARs per Individual Sample"
+    
+    if(is.na(y_label)){
+      y_label <- "EARs per Individual Sample"
+    } else {
+      y_label <- y_label
+    }
     
     graphData <- chemical_summary %>%
-      dplyr::select(-site) 
+      select(-site) 
     
-    placement <- -0.05*diff(range(graphData$meanEAR))
+    placement <- -0.05*diff(range(graphData$EAR))
     
-    dates <- dplyr::arrange(dplyr::distinct(dplyr::select(graphData, date))) 
+    dates <- arrange(distinct(select(graphData, date))) 
     dates$index <- 1:(nrow(dates))
     
     graphData <- graphData %>%
-      dplyr::left_join(dates, by="date")
+      left_join(dates, by="date")
 
     if(category == "Biological"){
       graphData$category <- graphData$Bio_category
@@ -203,17 +236,17 @@ plot_tox_stacks <- function(chemical_summary,
       orig_cat <- levels(graphData$category)
       
       top_data <- graphData %>%
-        dplyr::group_by(category) %>%
-        dplyr::summarize(maxEAR = max(EAR, na.rm = TRUE)) %>%
-        dplyr::arrange(dplyr::desc(maxEAR)) %>%
-        dplyr::top_n(maxEAR, n=top_num) %>%
-        dplyr::mutate(category = as.character(category)) %>%
-        dplyr::pull(category)
+        group_by(category) %>%
+        summarize(maxEAR = max(EAR, na.rm = TRUE)) %>%
+        arrange(desc(maxEAR)) %>%
+        top_n(maxEAR, n=top_num) %>%
+        mutate(category = as.character(category)) %>%
+        pull(category)
       
       other_text <- paste0("Others (",length(orig_cat)-top_num,")")
       
       graphData <- graphData %>%
-        dplyr::mutate(category = as.character(category),
+        mutate(category = as.character(category),
                       category = ifelse(category %in% top_data,
                                         category, other_text),
                       category = factor(category, levels = c(top_data, other_text)))
@@ -224,12 +257,19 @@ plot_tox_stacks <- function(chemical_summary,
       theme_minimal() +
       theme(axis.text.x=element_blank(),
             axis.ticks.x=element_blank()) +
-      xlab("Individual Samples") +
-      ylab(y_label) 
+      xlab("Individual Samples") 
+    
+    if(!isTRUE(y_label == "")){
+      upperPlot <- upperPlot +
+        ylab(y_label)
+    } else {
+      upperPlot <- upperPlot +
+        theme(axis.title.y = element_blank())
+    }
   }
   
   upperPlot <- upperPlot +
-    geom_col()  +
+    geom_col(na.rm = TRUE)  +
     theme(plot.margin = unit(c(5.5,5.5,5.5,12), "pt"))
   
   if(length(unique(graphData$category)) <= length(cbValues)){
@@ -260,12 +300,10 @@ plot_tox_stacks <- function(chemical_summary,
               plot.caption = element_text(size=font_size))
     }
   }
-  
-  if(utils::packageVersion("ggplot2") >= '3.0.0'){
-    upperPlot <- upperPlot +
-      coord_cartesian(clip = "off")
-  } 
 
+  upperPlot <- upperPlot +
+    coord_cartesian(clip = "off")
+  
   return(upperPlot)
 }
 

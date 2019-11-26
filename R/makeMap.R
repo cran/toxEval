@@ -63,8 +63,8 @@ make_tox_map <- function(chemical_summary,
   
   if(length(siteToFind) == 1){
     
-    mapData <- dplyr::filter(chem_site, SiteID == siteToFind) %>%
-      dplyr::mutate(nSamples = median(mapData$count),
+    mapData <- filter(chem_site, SiteID == siteToFind) %>%
+      mutate(nSamples = median(mapData$count),
              meanMax = median(mapData$meanMax),
              sizes = median(mapData$sizes))
   }
@@ -74,11 +74,16 @@ make_tox_map <- function(chemical_summary,
     leaflet::clearMarkers() %>%
     leaflet::clearControls() %>%
     leaflet::setView(lng = mean(mapData$dec_lon, na.rm = TRUE), 
-            lat = mean(mapData$dec_lat, na.rm = TRUE), zoom=6) %>%
-    leaflet::fitBounds(lng1 = min(mapData$dec_lon, na.rm = TRUE), 
-              lat1 = min(mapData$dec_lat, na.rm = TRUE), 
-              lng2 = max(mapData$dec_lon, na.rm = TRUE), 
-              lat2 = max(mapData$dec_lat, na.rm = TRUE)) %>%
+            lat = mean(mapData$dec_lat, na.rm = TRUE), zoom=6) 
+  
+  if(length(siteToFind) != 1){
+    map <- map %>% 
+      leaflet::fitBounds(lng1 = min(mapData$dec_lon, na.rm = TRUE), 
+                         lat1 = min(mapData$dec_lat, na.rm = TRUE), 
+                         lng2 = max(mapData$dec_lon, na.rm = TRUE), 
+                         lat2 = max(mapData$dec_lat, na.rm = TRUE))
+  }
+  map <- map %>% 
     leaflet::addCircleMarkers(lat=~dec_lat, lng=~dec_lon,
                      popup=paste0('<b>',mapData$`Short Name`,"</b><br/><table>",
                                   "<tr><td>",maxEARWords,": </td><td>",sprintf("%.1f",mapData$meanMax),'</td></tr>',
@@ -135,20 +140,22 @@ map_tox_data <- function(chemical_summary,
   mapData <- chem_site[chem_site$`Short Name` %in% siteToFind,
                        c("Short Name", "dec_lat", "dec_lon", "SiteID")]
   
-  nSamples <- dplyr::select(chemical_summary,site,date) %>%
-    dplyr::distinct() %>%
-    dplyr::group_by(site) %>%
-    dplyr::summarize(count = dplyr::n())
+  nSamples <- chemical_summary %>% 
+    select(site, date) %>%
+    distinct() %>%
+    group_by(site) %>%
+    summarize(count = n()) %>% 
+    ungroup()
   
   meanStuff <- tox_boxplot_data(chemical_summary = chemical_summary, 
                          category = category,
                          mean_logic = mean_logic,
                          sum_logic = sum_logic) %>%
-    dplyr::group_by(site) %>%
-    dplyr::summarize(meanMax = max(meanEAR)) %>%
-    dplyr::left_join(nSamples, by="site")
+    group_by(site) %>%
+    summarize(meanMax = max(meanEAR)) %>%
+    left_join(nSamples, by="site")
   
-  mapData <- dplyr::left_join(mapData, meanStuff, by=c("SiteID"="site"))
+  mapData <- left_join(mapData, meanStuff, by=c("SiteID"="site"))
   
   col_types <- c("darkblue","dodgerblue","green4","gold1","orange","brown","red")
   

@@ -32,6 +32,7 @@
 #' "Chemical Class" groupings, or "Chemical" that do not have any detections. 
 #' @param font_size Numeric value to adjust the axis font size.
 #' @param title Character title for plot. 
+#' @param legend_lab Character label for legend. Default is NA which produces an automatic label.
 #' @param breaks Numerical vector to define data bins and legend breaks.
 #' @export
 #' @rdname plot_tox_heatmap
@@ -76,13 +77,9 @@
 #' 
 #' tox_list$chem_site$`Short Name` <- factor(tox_list$chem_site$`Short Name`,
 #'               levels = sitesOrdered)
-#'               
-#' plot_tox_heatmap(chemical_summary, 
-#'                  tox_list$chem_site, 
-#'                  category = "Biological",
-#'                  manual_remove = "Undefined")
 #' plot_tox_heatmap(chemical_summary, tox_list$chem_site, category = "Chemical Class")
-#' plot_tox_heatmap(chemical_summary, tox_list$chem_site, category = "Chemical")
+#' plot_tox_heatmap(chemical_summary, tox_list$chem_site, 
+#'                  category = "Chemical", legend_lab = "EAR")
 #' 
 plot_tox_heatmap <- function(chemical_summary, 
                              chem_site, 
@@ -93,9 +90,14 @@ plot_tox_heatmap <- function(chemical_summary,
                              sum_logic = TRUE,
                              plot_ND = TRUE, 
                              font_size = NA,
-                             title = NA){
+                             title = NA,
+                             legend_lab = NA){
   
   match.arg(category, c("Biological","Chemical Class","Chemical"))
+  
+  if(nrow(chemical_summary) == 0){
+    stop("No rows in the chemical_summary data frame")
+  }
   
   SiteID <- site_grouping <- `Short Name` <- chnm <- maxEAR <- ".dplyr"
   site <- EAR <- sumEAR <- meanEAR <- ".dplyr"
@@ -109,11 +111,12 @@ plot_tox_heatmap <- function(chemical_summary,
   }
   
   if(category == "Chemical"){
-    plot_back <- plot_heat_chemicals(chemical_summary=chemical_summary, 
-                                     mean_logic=mean_logic,
-                                     sum_logic=sum_logic,
-                                     chem_site=chem_site,
-                                     breaks=breaks)
+    plot_back <- plot_heat_chemicals(chemical_summary = chemical_summary, 
+                                     mean_logic = mean_logic,
+                                     sum_logic = sum_logic,
+                                     chem_site = chem_site,
+                                     breaks = breaks,
+                                     legend_lab = legend_lab)
     
   } else {
     
@@ -124,7 +127,7 @@ plot_tox_heatmap <- function(chemical_summary,
                            sum_logic = sum_logic)
 
     graphData <- graphData %>%
-      dplyr::left_join(chem_site[, c("SiteID", "site_grouping", "Short Name")],
+      left_join(chem_site[, c("SiteID", "site_grouping", "Short Name")],
                 by=c("site"="SiteID"))
     
     # This requires non-detects to be 0. If that changes we'll need to update:
@@ -137,22 +140,24 @@ plot_tox_heatmap <- function(chemical_summary,
     
     single_site <- length(unique(chemical_summary$site)) == 1
     
-    y_label <- fancyLabels(category, mean_logic, sum_logic, single_site, sep = TRUE, include_site = FALSE)
-    
-    caption <- y_label[['caption']]
-    fill_label <- y_label[['y_label']]
+    if(is.na(legend_lab)){
+      y_label <- fancyLabels(category, mean_logic, sum_logic, single_site, sep = TRUE, include_site = FALSE)
+      
+      caption <- y_label[['caption']]
+      fill_label <- y_label[['y_label']]      
+    } else {
+      fill_label <- legend_lab
+      caption <- ""
+    }
+
     
     plot_back <- ggplot(data = graphData) +
       geom_point(data = complete_data_filled, aes(x = `Short Name`, y=category, shape=""), size = 2 ) +
       geom_tile(aes(x = `Short Name`, y=category, fill=meanEAR, color="")) +
       theme_bw() +
       theme(axis.text.x = element_text( angle = 90,vjust=0.5,hjust = 0.975)) +
-      ylab("") +
-      xlab("") +
       scale_colour_manual(values=NA) + 
       scale_shape_manual(values=4) +
-      labs(fill = fill_label, caption = caption) +
-      # labs(fill=y_label[["y_label"]], caption = y_label[["caption"]]) +
       scale_fill_gradient( trans = 'log',
                            low = "white", high = "steelblue",
                            breaks=breaks,
@@ -164,8 +169,17 @@ plot_tox_heatmap <- function(chemical_summary,
             panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(),
             axis.ticks = element_blank(),
+            axis.title = element_blank(),
             plot.background = element_rect(fill = "transparent",colour = NA))
 
+    if(caption == ""){
+      plot_back <- plot_back +
+        labs(fill = fill_label)      
+    } else {
+      plot_back <- plot_back +
+        labs(fill = fill_label, caption = caption) 
+    }
+    
     any_non_detects <- any(is.na(graphData$meanEAR))
     complete_data_filled <- get_complete_set_category(chemical_summary, graphData, chem_site)
     
@@ -217,7 +231,8 @@ plot_heat_chemicals <- function(chemical_summary,
                                 chem_site,
                                 mean_logic,
                                 sum_logic,
-                                breaks){
+                                breaks,
+                                legend_lab){
   
   SiteID <- site_grouping <- `Short Name` <- chnm <- maxEAR <- ".dplyr"
   site <- EAR <- sumEAR <- meanEAR <- ".dplyr"
@@ -231,13 +246,18 @@ plot_heat_chemicals <- function(chemical_summary,
   }
   single_site <- length(unique(chemical_summary$site)) == 1
 
-  y_label <- fancyLabels(category = "Chemical", mean_logic, sum_logic, single_site, sep = TRUE, include_site = FALSE)
-  
-  caption <- y_label[['caption']]
-  fill_text <- y_label[['y_label']]
+  if(is.na(legend_lab)){
+    y_label <- fancyLabels(category = "Chemical", mean_logic, sum_logic, single_site, sep = TRUE, include_site = FALSE)
+    
+    caption <- y_label[['caption']]
+    fill_text <- y_label[['y_label']]    
+  } else {
+    fill_text <- legend_lab
+    caption <- ""
+  }
 
   graphData <- graphData %>%
-    dplyr::left_join(chem_site[, c("SiteID", "site_grouping", "Short Name")],
+    left_join(chem_site[, c("SiteID", "site_grouping", "Short Name")],
               by=c("site"="SiteID"))
   
   # This requires non-detects to be 0. If that changes we'll need to update:
@@ -253,9 +273,6 @@ plot_heat_chemicals <- function(chemical_summary,
     geom_tile(aes(x = `Short Name`, y=chnm, fill=meanEAR, color = "")) +
     theme_bw() +
     theme(axis.text.x = element_text( angle = 90,vjust=0.5,hjust = 1)) +
-    ylab("") +
-    xlab("") +
-    labs(fill = fill_text, caption = caption) +
     scale_fill_gradient( na.value = 'khaki',
                          trans = 'log', low = "white", high = "steelblue",
                          breaks=breaks,
@@ -265,11 +282,19 @@ plot_heat_chemicals <- function(chemical_summary,
     facet_grid(Class ~ site_grouping, scales="free", space="free") +
     theme(strip.text.y = element_text(angle=0, hjust=0), 
           strip.background = element_rect(fill="transparent", colour = NA),
-          # axis.text.y = element_text(face=ifelse(levels(graphData$category) %in% c("Total"),"bold","italic")),
           panel.spacing = unit(0.05, "lines"),
+          axis.title = element_blank(),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           plot.background = element_rect(fill = "transparent",colour = "transparent")) 
+  
+  if(caption == ""){
+    heat <- heat +
+      labs(fill = fill_text)
+  } else {
+    heat <- heat +
+      labs(fill = fill_text, caption = caption)
+  }
   
   if(any_non_detects & any_missing){
     heat <- heat +
@@ -302,15 +327,15 @@ get_complete_set <- function(chemical_summary, graphData, chem_site){
   
   `Short Name` <- site_grouping <- Class <- chnm <- ".dplyr"
   
-  complete_data <- dplyr::select(chem_site, `Short Name`, site_grouping)
+  complete_data <- select(chem_site, `Short Name`, site_grouping)
   complete_data_filled <- data.frame()
   
   for(chms in levels(chemical_summary$chnm)){
     complete_data$chnm <- chms
-    complete_data_filled <- dplyr::bind_rows(complete_data_filled, complete_data)
+    complete_data_filled <- bind_rows(complete_data_filled, complete_data)
   }
   complete_data_filled$chnm <- factor(complete_data_filled$chnm, levels = levels(graphData$chnm))
-  complete_data_filled <- dplyr::left_join(complete_data_filled, dplyr::distinct(dplyr::select(chemical_summary, chnm, Class)), by="chnm")
+  complete_data_filled <- left_join(complete_data_filled, distinct(select(chemical_summary, chnm, Class)), by="chnm")
   return(complete_data_filled)
 }
 
@@ -319,13 +344,13 @@ get_complete_set_category <- function(chemical_summary, graphData, chem_site, ca
   
   `Short Name` <- site_grouping <- Class <- chnm <- ".dplyr"
   
-  complete_data <- dplyr::select(chem_site, `Short Name`, site_grouping)
+  complete_data <- select(chem_site, `Short Name`, site_grouping)
   complete_data_filled <- data.frame()
   categories <- levels(graphData$category)
   
   for(cats in categories){
     complete_data$category <- cats
-    complete_data_filled <- dplyr::bind_rows(complete_data_filled, complete_data)
+    complete_data_filled <- bind_rows(complete_data_filled, complete_data)
   }
   complete_data_filled$category <- factor(complete_data_filled$category, levels = levels(graphData$category))
 

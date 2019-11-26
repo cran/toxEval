@@ -36,7 +36,9 @@ flagsALL <- c("Borderline active",
               "Noisy data",                                 
               "Hit-call potentially confounded by overfitting",
               "Gain AC50 < lowest conc & loss AC50 < mean conc",
-              "Biochemical assay with < 50% efficacy")
+              "Biochemical assay with < 50% efficacy",
+              "Less than 50% efficacy",
+              "AC50 less than lowest concentration tested")
 
 shortFlags <- c("Borderline",
                 "OnlyHighest",
@@ -44,7 +46,9 @@ shortFlags <- c("Borderline",
                 "Noisy",
                 "HitCall",
                 "GainAC50",
-                "Biochemical")
+                "Biochemical",
+                "LessThan50",
+                "ACCLessThan")
 
 assay_names <- c("Apredica" = "APR",
                  "Attagene" = "ATG",
@@ -66,10 +70,10 @@ library(toxEval)
 path_to_file <- 'Choose File'"
 
 names(shortFlags) <- flagsALL
-header <- dashboardHeader(title = "toxEval",
+header <- dashboardHeader(title = paste("toxEval",packageVersion("toxEval")),
                           tags$li(class = "dropdown", 
                                   div(style="text-align:left;
-                                      font-size: 20px;
+                                      font-size: 15px;
                                       height: 50px;
                                       font-weight: 300;
                                       margin-right:25px;

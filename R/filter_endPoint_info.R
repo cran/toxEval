@@ -27,6 +27,7 @@
 #' end_point_info <- end_point_info
 #' cleaned_ep <- clean_endPoint_info(end_point_info)
 #' filtered_ep <- filter_groups(cleaned_ep)
+#' head(filtered_ep)
 filter_groups <- function(ep, 
                           groupCol = "intended_target_family",
                           assays = c("ATG","NVS","OT","TOX21","CEETOX","APR", 
@@ -42,7 +43,7 @@ filter_groups <- function(ep,
   assay_source_name <- assay_component_endpoint_name <- ".dplyr"
   
   ep <- ep[,c("assay_component_endpoint_name",groupCol,"assay_source_name")] %>%
-    dplyr::rename(endPoint = assay_component_endpoint_name,
+    rename(endPoint = assay_component_endpoint_name,
            assaysFull = assay_source_name)
   names(ep)[names(ep) == groupCol] <- "groupCol"
   

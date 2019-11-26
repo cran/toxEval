@@ -11,6 +11,18 @@ knitr::opts_chunk$set(echo = TRUE,
 #  library(toxEval)
 #  explore_endpoints()
 
+## ----mainImage, echo=FALSE--------------------------------
+knitr::include_graphics("main.png")
+
+## ----sideImage, echo=FALSE, fig.align='right', out.extra='style="float:right; padding:10px"'----
+knitr::include_graphics("sidebar.png")
+
+## ----assayIMAGE, echo=FALSE, fig.align='right', out.extra='style="float:right; padding:10px"'----
+knitr::include_graphics("assays.png")
+
+## ----flagImage, echo=FALSE, fig.align='right', out.extra='style="float:right; padding:10px"'----
+knitr::include_graphics("flags.png")
+
 ## ---------------------------------------------------------
 citation(package = "toxEval")
 

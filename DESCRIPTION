@@ -2,7 +2,7 @@ Package: toxEval
 Type: Package
 Title: Exploring Biological Relevance of Environmental Chemistry
         Observations
-Version: 1.0.4
+Version: 1.1.0
 Authors@R: c(person("Laura", "DeCicco", 
                      role = c("aut","cre"),
                      email = "ldecicco@usgs.gov",
@@ -15,7 +15,8 @@ Authors@R: c(person("Laura", "DeCicco",
                      role = c("aut"),
                      comment=c(ORCID="0000-0003-2801-0203")),
               person("Brett", "Blackwell", 
-                     role = c("aut")), 
+                     role = c("aut"),
+                     comment=c(ORCID="0000-0003-1296-4539")), 
               person("Gerald", "Ankley", 
                      role = c("aut"),
                      comment=c(ORCID="0000-0002-9937-615X")), 
@@ -33,26 +34,26 @@ Copyright: This software is in the public domain because it contains
         Interior. For more information, see the official USGS copyright
         policy at
         https://www.usgs.gov/visual-id/credit_usgs.html#copyright
-Depends: R (>= 3.0)
+Depends: R (>= 3.5.0)
 Imports: dplyr, tidyr, DT (>= 0.1.24), leaflet (>= 1.0.0), ggplot2 (>=
         3.0.0), magrittr, shiny, shinydashboard, RColorBrewer, readxl,
         tools, shinyAce, shinycssloaders
-Suggests: rmarkdown, testthat, knitr
+Suggests: rmarkdown, testthat, knitr, here, tcpl, openxlsx
 BugReports: https://github.com/USGS-R/toxEval/issues
 VignetteBuilder: knitr
 BuildVignettes: true
 LazyLoad: yes
 LazyData: yes
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.0
 NeedsCompilation: no
-Packaged: 2019-03-22 21:39:33 UTC; ldecicco
+Packaged: 2019-11-26 15:30:51 UTC; ldecicco
 Author: Laura DeCicco [aut, cre] (<https://orcid.org/0000-0002-3915-9487>),
   Steven Corsi [aut] (<https://orcid.org/0000-0003-0583-5536>),
   Daniel Villeneuve [aut] (<https://orcid.org/0000-0003-2801-0203>),
-  Brett Blackwell [aut],
+  Brett Blackwell [aut] (<https://orcid.org/0000-0003-1296-4539>),
   Gerald Ankley [aut] (<https://orcid.org/0000-0002-9937-615X>),
   Alison Appling [rev] (Reviewed for USGS),
   Dalma Martinovic [rev] (Reviewed for USGS)
 Maintainer: Laura DeCicco <ldecicco@usgs.gov>
 Repository: CRAN
-Date/Publication: 2019-03-22 22:00:03 UTC
+Date/Publication: 2019-11-26 16:00:02 UTC
