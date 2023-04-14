@@ -5,27 +5,29 @@
 \alias{end_point_info}
 \title{Endpoint information from ToxCast}
 \source{
-\url{https://doi.org/10.23645/epacomptox.6062479.v3}
+\doi{10.23645/epacomptox.6062479.v3}
 }
 \value{
 data frame with 86 columns. The columns and definitions
-are discussed in the "ToxCast Assay Annotation Version 1.0 Data User Guide (PDF)" (see source)
+are discussed in the "ToxCast Assay Annotation Version 1.0 Data User Guide (PDF)" (see source).
+The column "Relevance Category" was included for consideration of 
+grouping/filtering endpoints based on user goals.
 }
 \description{
-Downloaded on October 2018 from ToxCast. The file name of the
-raw data was "Assay_Summary_190226.csv" from the zip file 
-"INVITRODB_V3_1_SUMMARY" folder. At the time
+Downloaded on October 2022 from ToxCast. The file name of the
+raw data was "assay_annotation_information_invitrodb_v3_5.xlsx" from the zip file
+"INVITRODB_V3_5_SUMMARY" folder. At the time
 of the toxEval package release, these data were found at:
-\url{https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data}
-in the section marked "Download Assay Information", in the 
+\url{https://www.epa.gov/chemical-research/exploring-toxcast-data}
+in the section marked "Download Assay Information", in the
 ToxCast & Tox21 high-throughput assay information data set.
 }
 \examples{
 end_point_info <- end_point_info
-head(end_point_info[,1:5])
+head(end_point_info[, 1:5])
 }
 \references{
-U.S. EPA. 2014. ToxCast Assay Annotation Data User Guide. 
+U.S. EPA. 2014. ToxCast Assay Annotation Data User Guide.
 \url{https://www.epa.gov/chemical-research/toxcast-assay-annotation-data-user-guide}.
 }
 \keyword{datasets}

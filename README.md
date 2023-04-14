@@ -1,4 +1,10 @@
-toxEval
+# toxEval <img src="man/figures/toxEval.png" alt="toxEval" class="logo" style="width:90px;height:auto;" align="right" />
+
+[![CRAN
+version](http://www.r-pkg.org/badges/version/toxEval)](https://cran.r-project.org/package=toxEval)
+[![](http://cranlogs.r-pkg.org/badges/toxEval)](https://cran.r-project.org/package=toxEval)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/toxEval)](https://cran.r-project.org/package=toxEval)
+
 The `toxEval` R-package includes a set of functions to analyze,
 visualize, and organize measured concentration data as it relates to
 <https://www.epa.gov/chemical-research/toxicity-forecasting> or other
@@ -21,124 +27,30 @@ flexibility within the functions beyond what the app offers and provides
 options for the user to interact more directly with the data. The
 overview in this document focuses on the R-package.
 
-Quickstart
-----------
+Documentation: <https://doi-usgs.github.io/toxEval/>
 
-<p align="center">
-<img src="https://code.usgs.gov/water/toxEval/raw/master/man/figures/app.gif" alt="app_demo">
-</p>
+## Installation of toxEval
 
-Installation instructions are below. To quickly get going in `toxEval`,
-run:
+To install the toxEval package, you must be using R 3.0 or greater and
+run the following command:
 
 ``` r
-library(toxEval)
-explore_endpoints()
+install.packages("toxEval")
 ```
 
-Then click on the "Load Example Data"" in the upper right corner. This
-loads the example data that is found here:
+To get cutting-edge changes, install from GitHub using the `remotes`
+packages:
 
 ``` r
-file.path(system.file("extdata", package="toxEval"), "OWC_data_fromSup.xlsx")
+library(remotes)
+install_gitlab("water/toxEval",
+               host = "code.usgs.gov",
+               build_vignettes = TRUE, 
+               build_opts = c("--no-resave-data",
+                              "--no-manual"))
 ```
 
-Once the data is loaded in the app, sample R code is shown below each
-tab. This can be copied into the R console (once the app is stopped…) to
-use as a base for exploring the package directly in R.
-
-Alternatively, an example workflow is shown here (also using example
-data provided in the package):
-
-``` r
-library(toxEval)
-#> USGS Research Package:
-#> https://owi.usgs.gov/R/packages.html#research
-#> ToxCast database: version 3.2
-path_to_file <- file.path(system.file("extdata", package="toxEval"), "OWC_data_fromSup.xlsx")
-tox_list <- create_toxEval(path_to_file)
-ACClong <- get_ACC(tox_list$chem_info$CAS)
-ACClong <- remove_flags(ACClong)
-
-cleaned_ep <- clean_endPoint_info(end_point_info)
-filtered_ep <- filter_groups(cleaned_ep, 
-                  groupCol = 'intended_target_family',
-                  remove_groups = c('Background Measurement','Undefined'))
-
-chemicalSummary <- get_chemical_summary(tox_list, 
-                                        ACClong, 
-                                        filtered_ep)
-######################################
-chem_class_plot <- plot_tox_boxplots(chemicalSummary,
-                                     category = 'Chemical Class')
-chem_class_plot
-```
-
-![](man/figures/README-unnamed-chunk-4-1.png)
-
-``` r
-
-######################################
-plot_stacks <- plot_tox_stacks(chemicalSummary, 
-                               tox_list$chem_site, 
-                               category = "Chemical Class")
-plot_stacks
-```
-
-![](man/figures/README-unnamed-chunk-4-2.png)
-
-``` r
-######################################
-plot_heat <- plot_tox_heatmap(chemicalSummary, 
-                              tox_list$chem_site, 
-                              category = "Chemical Class",
-                              font_size = 7)
-plot_heat
-```
-
-![](man/figures/README-unnamed-chunk-4-3.png)
-
-This code opens up the example file, loads it into a `toxEval` object,
-grabs the pertinent ToxCast information, and creates a “chemicalSummary”
-data frame that is used in many of the plot and table functions.
-
-There are 4 vignettes to help introduce and navigate the `toxEval`
-package:
-
-``` r
-vignette("Introduction", package="toxEval")
-vignette("basicWorkflow", package="toxEval")
-vignette("PrepareData", package="toxEval")
-vignette("shinyApp", package="toxEval")
-```
-
-### Reporting bugs
-
-Please consider reporting bugs and asking questions on the Issues page:
-<https://github.com/USGS-R/toxEval/issues>
-
-
-### Package Support
-
-The Water and Environmental Health Mission Areas of the USGS, as well as
-the Great Lakes Restoration Initiative (GLRI) has supported the
-development of the `toxEval` R-package. Further maintenance is expected
-to be stable through September 2021. Resources are available primarily
-for maintenance and responding to user questions. Priorities on the
-development of new features are determined by the `toxEval` development
-team.
-
-[![USGS](http://usgs-r.github.io/images/usgs.png)](https://www.usgs.gov/)
-
-### Sunset date
-
-Funding for `toxEval` is secured through summer 2021, after which bug
-fixes & new features will be minimal.
-
-
-
-Citing toxEval
---------------
+## Citing toxEval
 
 ``` r
 citation(package = "toxEval")
@@ -146,10 +58,10 @@ citation(package = "toxEval")
 #> To cite toxEval in publications, please use:
 #> 
 #>   De Cicco, L.A., Corsi, S.R., Villeneuve D.L, Blackwell, and B.R,
-#>   Ankley, G.T., 2020, toxEval: Evaluation of measured concentration
+#>   Ankley, G.T., 2023, toxEval: Evaluation of measured concentration
 #>   data using the ToxCast high-throughput screening database or a
 #>   user-defined set of concentration benchmarks. R package version
-#>   1.2.0., https://code.usgs.gov/water/toxEval, doi:10.5066/P906UQ5I
+#>   1.3.0., https://code.usgs.gov/water/toxEval, doi:10.5066/P906UQ5I
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
@@ -157,25 +69,23 @@ citation(package = "toxEval")
 #>     author = {Laura A. {De Cicco} and Steven R. Corsi and Daniel L. Villeneuve and Brett R. Blackwell and Gerald T. Ankley},
 #>     title = {toxEval: Evaluation of measured concentration data using the ToxCast high-throughput screening database or a user-defined set of concentration benchmarks.},
 #>     publisher = {U.S. Geological Survey},
-#>     version = {1.2.0},
+#>     version = {1.3.0},
 #>     address = {Reston, VA},
 #>     institution = {U.S. Geological Survey},
-#>     year = {2020},
+#>     year = {2023},
 #>     doi = {10.5066/P906UQ5I},
 #>     url = {https://code.usgs.gov/water/toxEval},
 #>   }
 ```
 
-Disclaimer
-----------
+# Disclaimer
 
-This software has been approved for release by the U.S. Geological
-Survey (USGS). Although the software has been subjected to rigorous
-review, the USGS reserves the right to update the software as needed
-pursuant to further analysis and review. No warranty, expressed or
-implied, is made by the USGS or the U.S. Government as to the
-functionality of the software and related material nor shall the fact of
-release constitute any such warranty. Furthermore, the software is
-released on condition that neither the USGS nor the U.S. Government
-shall be held liable for any damages resulting from its authorized or
-unauthorized use.
+This software is preliminary or provisional and is subject to revision.
+It is being provided to meet the need for timely best science. The
+software has not received final approval by the U.S. Geological Survey
+(USGS). No warranty, expressed or implied, is made by the USGS or the
+U.S. Government as to the functionality of the software and related
+material nor shall the fact of release constitute any such warranty. The
+software is provided on the condition that neither the USGS nor the U.S.
+Government shall be held liable for any damages resulting from the
+authorized or unauthorized use of the software.

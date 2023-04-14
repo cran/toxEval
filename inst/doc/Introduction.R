@@ -11,15 +11,6 @@
 #                remove_groups = c("Background Measurement",
 #                                  "Undefined"))
 
-## ---- eval=FALSE--------------------------------------------------------------
-#  install.packages("toxEval")
-
-## ----update, echo=FALSE-------------------------------------------------------
-knitr::include_graphics("update.png")
-
-## ----eval=FALSE---------------------------------------------------------------
-#  update.packages()
-
 ## ---- eval=TRUE---------------------------------------------------------------
 citation(package = "toxEval")
 
