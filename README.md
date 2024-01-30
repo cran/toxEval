@@ -7,9 +7,9 @@ version](http://www.r-pkg.org/badges/version/toxEval)](https://cran.r-project.or
 
 The `toxEval` R-package includes a set of functions to analyze,
 visualize, and organize measured concentration data as it relates to
-<https://www.epa.gov/chemical-research/toxicity-forecasting> or other
-user-selected chemical-biological interaction benchmark data such as
-water quality criteria. The intent of these analyses is to develop a
+<https://www.epa.gov/comptox-tools/toxicity-forecasting-toxcast> or
+other user-selected chemical-biological interaction benchmark data such
+as water quality criteria. The intent of these analyses is to develop a
 better understanding of the potential biological relevance of
 environmental chemistry data. Results can be used to prioritize which
 chemicals at which sites may be of greatest concern. These methods are
@@ -26,8 +26,6 @@ choose. Use of the functions within the R-package allows for additional
 flexibility within the functions beyond what the app offers and provides
 options for the user to interact more directly with the data. The
 overview in this document focuses on the R-package.
-
-Documentation: <https://doi-usgs.github.io/toxEval/>
 
 ## Installation of toxEval
 
@@ -50,11 +48,139 @@ install_gitlab("water/toxEval",
                               "--no-manual"))
 ```
 
+## Quickstart
+
+<p align="center">
+<img src="https://code.usgs.gov/water/toxEval/raw/main/man/figures/app.gif" alt="app_demo">
+</p>
+
+Installation instructions are below. To quickly get going in `toxEval`,
+run:
+
+``` r
+library(toxEval)
+explore_endpoints()
+```
+
+Then click on the “Load Example Data” in the upper right corner. This
+loads the example data that is found here:
+
+``` r
+file.path(system.file("extdata", package="toxEval"), "OWC_data_fromSup.xlsx")
+```
+
+Once the data is loaded in the app, sample R code is shown below each
+tab. This can be copied into the R console (once the app is stopped…) to
+use as a base for exploring the package directly in R.
+
+Alternatively, an example workflow is shown here (also using example
+data provided in the package):
+
+``` r
+library(toxEval)
+#> For more information:
+#> https://doi-usgs.github.io/toxEval/
+#> ToxCast database: version 3.5
+path_to_file <- file.path(system.file("extdata", package="toxEval"), "OWC_data_fromSup.xlsx")
+tox_list <- create_toxEval(path_to_file)
+ACClong <- get_ACC(tox_list$chem_info$CAS)
+ACClong <- remove_flags(ACClong)
+
+cleaned_ep <- clean_endPoint_info(end_point_info)
+filtered_ep <- filter_groups(cleaned_ep, 
+                  groupCol = 'intended_target_family',
+                  remove_groups = c('Background Measurement','Undefined'))
+
+chemicalSummary <- get_chemical_summary(tox_list, 
+                                        ACClong, 
+                                        filtered_ep)
+######################################
+chem_class_plot <- plot_tox_boxplots(chemicalSummary,
+                                     category = 'Chemical Class')
+chem_class_plot
+```
+
+![](man/figures/README-unnamed-chunk-6-1.png)
+
+``` r
+
+######################################
+plot_stacks <- plot_tox_stacks(chemicalSummary, 
+                               tox_list$chem_site, 
+                               category = "Chemical Class")
+plot_stacks
+```
+
+![](man/figures/README-unnamed-chunk-6-2.png)
+
+``` r
+######################################
+plot_heat <- plot_tox_heatmap(chemicalSummary, 
+                              tox_list$chem_site, 
+                              category = "Chemical Class",
+                              font_size = 7)
+plot_heat
+```
+
+![](man/figures/README-unnamed-chunk-6-3.png)
+
+This code opens up the example file, loads it into a `toxEval` object,
+grabs the pertinent ToxCast information, and creates a “chemicalSummary”
+data frame that is used in many of the plot and table functions.
+
+There are 4 vignettes to help introduce and navigate the `toxEval`
+package:
+
+| Name                                                                                 | R command                                      | Description                                             |
+|------------|--------------|----------------------------------------------|
+| [Introduction](https://rconnect.usgs.gov/toxEval_docs/articles/Introduction.html)    | `vignette("Introduction", package="toxEval")`  | Introduction to the toxEval                             |
+| [Basic Workflow](https://rconnect.usgs.gov/toxEval_docs/articles/basicWorkflow.html) | `vignette("basicWorkflow", package="toxEval")` | Quickstart guide to get overview of available functions |
+| [Prepare Data](https://rconnect.usgs.gov/toxEval_docs/articles/PrepareData.html)     | `vignette("PrepareData", package="toxEval")`   | Guide to preparing your data for toxEval analysis       |
+| [Shiny App Guide](https://rconnect.usgs.gov/toxEval_docs/articles/shinyApp.html)     | `vignette("shinyApp", package="toxEval")`      | Guide to the toxEval shiny application                  |
+
+### Reporting bugs
+
+Please consider reporting bugs and asking questions on the Issues page:
+<https://github.com/DOI-USGS/toxEval/issues>
+
+### Code of Conduct
+
+We want to encourage a warm, welcoming, and safe environment for
+contributing to this project. See the [code of
+conduct](https://github.com/DOI-USGS/toxEval/blob/main/CONDUCT.md) for
+more information.
+
+### Package Support
+
+The Water and Environmental Health Mission Areas of the USGS, as well as
+the Great Lakes Restoration Initiative (GLRI) has supported the
+development of the `toxEval` R-package. Further maintenance is expected
+to be stable through September 2024. Resources are available primarily
+for maintenance and responding to user questions. Priorities on the
+development of new features are determined by the `toxEval` development
+team.
+
+### Sunset date
+
+Funding for `toxEval` is secured through summer 2024, after which bug
+fixes & new features will be minimal.
+
+## Run toxEval
+
+To run the toxEval app:
+
+1.  Open RStudio
+2.  In the Console (lower-left window of RStudio) paste the following:
+
+``` r
+library(toxEval)
+explore_endpoints()
+```
+
 ## Citing toxEval
 
 ``` r
 citation(package = "toxEval")
-#> 
 #> To cite toxEval in publications, please use:
 #> 
 #>   De Cicco, L.A., Corsi, S.R., Villeneuve D.L, Blackwell, and B.R,

@@ -255,54 +255,54 @@ ui <- tagList(
                             title = "USGS", height = "60px"),
                      style = "float: left; 
                               padding: 10px 50px 10px 50px;"),
-              # tags$a(
-              #   type = "button",
-              #   style="color: #fff; 
-              #         font-weight: 300;
-              #         font-size: 16px;
-              #         font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
-              #         float: left; 
-              #         padding: 30px 30px 30px 10px;",
-              #   href = "https://rconnect.usgs.gov/toxEval_docs/articles/Introduction.html", 
-              #   target="_blank",
-              #   "Introduction"
-              # ),
-              # tags$a(
-              #   type = "button",
-              #   # class = "btn action-button",
-              #   style="color: #fff;
-              #         font-weight: 300;
-              #         font-size: 16px;
-              #         font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
-              #         float: left; 
-              #         padding: 30px 30px 20px 10px;",
-              #   href = "https://rconnect.usgs.gov/toxEval_docs/articles/basicWorkflow.html",
-              #   target="_blank",
-              #   "Workflow"
-              # ),
-              # tags$a(
-              #   style="color: #fff;
-              #         font-weight: 300;
-              #         font-size: 16px;
-              #         font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
-              #         float: left; 
-              #         padding: 30px 30px 20px 10px;",
-              #   href = "https://rconnect.usgs.gov/toxEval_docs/articles/PrepareData.html",
-              #   target="_blank",
-              #   "Prepare Data"
-              # ),
-              # tags$a(
-              #   style="color: #fff;
-              #         font-weight: 300;
-              #         font-size: 16px;
-              #         vertical-align: middle;
-              #         font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
-              #         float: left; 
-              #         padding: 30px 30px 20px 10px;",
-              #   href = "https://rconnect.usgs.gov/toxEval_docs/articles/shinyApp.html",
-              #   target="_blank",
-              #   "Using the Shiny App"
-              # ),
+              tags$a(
+                type = "button",
+                style="color: #fff; 
+                      font-weight: 300;
+                      font-size: 16px;
+                      font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+                      float: left; 
+                      padding: 30px 30px 30px 10px;",
+                href = "https://rconnect.usgs.gov/toxEval_docs/articles/Introduction.html", 
+                target="_blank",
+                "Introduction"
+              ),
+              tags$a(
+                type = "button",
+                # class = "btn action-button",
+                style="color: #fff;
+                      font-weight: 300;
+                      font-size: 16px;
+                      font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+                      float: left; 
+                      padding: 30px 30px 20px 10px;",
+                href = "https://rconnect.usgs.gov/toxEval_docs/articles/basicWorkflow.html",
+                target="_blank",
+                "Workflow"
+              ),
+              tags$a(
+                style="color: #fff;
+                      font-weight: 300;
+                      font-size: 16px;
+                      font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+                      float: left; 
+                      padding: 30px 30px 20px 10px;",
+                href = "https://rconnect.usgs.gov/toxEval_docs/articles/PrepareData.html",
+                target="_blank",
+                "Prepare Data"
+              ),
+              tags$a(
+                style="color: #fff;
+                      font-weight: 300;
+                      font-size: 16px;
+                      vertical-align: middle;
+                      font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+                      float: left; 
+                      padding: 30px 30px 20px 10px;",
+                href = "https://rconnect.usgs.gov/toxEval_docs/articles/shinyApp.html",
+                target="_blank",
+                "Using the Shiny App"
+              ),
               tags$button(
                 id = 'close',
                 type = "button",
@@ -316,5 +316,5 @@ ui <- tagList(
   dashboardPage(header = dashboardHeader(disable = TRUE),
                 sidebar = sidebar,
                 body = body),
-  # tags$footer(htmltools::includeHTML("www/footer.html") )
+  tags$footer(htmltools::includeHTML("www/footer.html") )
 )

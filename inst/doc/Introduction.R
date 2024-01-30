@@ -11,6 +11,6 @@
 #                remove_groups = c("Background Measurement",
 #                                  "Undefined"))
 
-## ---- eval=TRUE---------------------------------------------------------------
+## ----eval=TRUE----------------------------------------------------------------
 citation(package = "toxEval")
 

@@ -21,7 +21,6 @@
 #' Short Name, dec_lon, and dec_lat.
 #' @export
 #' @rdname make_tox_map
-#' @importFrom stats quantile
 #' @examples
 #' # This is the example workflow:
 #' path_to_tox <- system.file("extdata", package = "toxEval")
@@ -46,7 +45,6 @@ make_tox_map <- function(chemical_summary,
                          category = "Biological",
                          mean_logic = FALSE,
                          sum_logic = TRUE) {
-  SiteID <- ".dplyr"
 
   maxEARWords <- ifelse(mean_logic, "meanEAR", "maxEAR")
 
@@ -62,11 +60,11 @@ make_tox_map <- function(chemical_summary,
   siteToFind <- unique(chemical_summary$site)
 
   if (length(siteToFind) == 1) {
-    mapData <- filter(chem_site, SiteID == siteToFind) %>%
-      mutate(
-        nSamples = median(mapData$count),
-        meanMax = median(mapData$meanMax),
-        sizes = median(mapData$sizes)
+    mapData <- dplyr::filter(chem_site, SiteID == siteToFind) %>%
+      dplyr::mutate(
+        nSamples = stats::median(mapData$count),
+        meanMax = stats::median(mapData$meanMax),
+        sizes = stats::median(mapData$sizes)
       )
   }
   map <- leaflet::leaflet(height = "500px", data = mapData) %>%
@@ -132,8 +130,6 @@ map_tox_data <- function(chemical_summary,
                          sum_logic = TRUE) {
   match.arg(category, c("Biological", "Chemical Class", "Chemical"))
 
-  site <- meanEAR <- nSamples <- `Short Name` <- dec_lat <- dec_lon <- n <- ".dplyr"
-
   siteToFind <- unique(chemical_summary$shortName)
 
   if (category == "Biological") {
@@ -154,11 +150,11 @@ map_tox_data <- function(chemical_summary,
   ]
 
   nSamples <- chemical_summary %>%
-    select(site, date) %>%
-    distinct() %>%
-    group_by(site) %>%
-    summarize(count = n()) %>%
-    ungroup()
+    dplyr::select(site, date) %>%
+    dplyr::distinct() %>%
+    dplyr::group_by(site) %>%
+    dplyr::summarize(count = dplyr::n()) %>%
+    dplyr::ungroup()
 
   meanStuff <- tox_boxplot_data(
     chemical_summary = chemical_summary,
@@ -166,18 +162,18 @@ map_tox_data <- function(chemical_summary,
     mean_logic = mean_logic,
     sum_logic = sum_logic
   ) %>%
-    group_by(site) %>%
-    summarize(meanMax = max(meanEAR)) %>%
-    left_join(nSamples, by = "site")
+    dplyr::group_by(site) %>%
+    dplyr::summarize(meanMax = max(meanEAR)) %>%
+    dplyr::left_join(nSamples, by = "site")
 
-  mapData <- left_join(mapData, meanStuff, by = c("SiteID" = "site"))
+  mapData <- dplyr::left_join(mapData, meanStuff, by = c("SiteID" = "site"))
 
   col_types <- c("darkblue", "dodgerblue", "green4", "gold1", "orange", "brown", "red")
 
   counts <- mapData$count
 
   if (length(siteToFind) > 1) {
-    leg_vals <- unique(as.numeric(quantile(mapData$meanMax, probs = c(0, 0.01, 0.1, 0.25, 0.5, 0.75, 0.9, .99, 1), na.rm = TRUE)))
+    leg_vals <- unique(as.numeric(stats::quantile(mapData$meanMax, probs = c(0, 0.01, 0.1, 0.25, 0.5, 0.75, 0.9, .99, 1), na.rm = TRUE)))
     pal <- leaflet::colorBin(col_types, mapData$meanMax, bins = leg_vals)
     rad <- 3 * seq(1, 4, length.out = 16)
 
@@ -187,7 +183,7 @@ map_tox_data <- function(chemical_summary,
       mapData$sizes <- rad[as.numeric(cut(mapData$count, breaks = 16))]
     }
   } else {
-    leg_vals <- unique(as.numeric(quantile(c(0, mapData$meanMax), probs = c(0, 0.01, 0.1, 0.25, 0.5, 0.75, 0.9, .99, 1), na.rm = TRUE)))
+    leg_vals <- unique(as.numeric(stats::quantile(c(0, mapData$meanMax), probs = c(0, 0.01, 0.1, 0.25, 0.5, 0.75, 0.9, .99, 1), na.rm = TRUE)))
     pal <- leaflet::colorBin(col_types, c(0, mapData$meanMax), bins = leg_vals)
     mapData$sizes <- 3
   }

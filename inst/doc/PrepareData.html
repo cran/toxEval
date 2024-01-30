@@ -236,7 +236,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Preparing toxEval Data</h1>
-<h4 class="date">14 April, 2023</h4>
+<h4 class="date">30 January, 2024</h4>
 
 
 <div id="TOC">
@@ -351,12 +351,8 @@ as “Fuels”, “Herbicides”, “Insecticides”, etc. The choice of classes
 up to the researcher. Chemical class analysis can be ignored, and in
 that case, it is just important to put a single repeating entry in the
 “Class” column.</p></li>
-<li><p>Chemical (optional): A character column defining the name of the
-chemical. The chemical names can be automatically assigned from the
-supplied data frame “tox_chemicals”. However, there may be chemicals
-that are in your data but not on that list. If you will be plotting
-those chemicals using either concentrations or custom benchmarks, you
-will need to supply a name for plotting and tables.</p></li>
+<li><p>Chemical: A character column defining the name of the chemical.
+These are the chemical names used for most figures and plots.</p></li>
 </ul>
 <p>Note: Additional columns may be useful to organize the data. These
 additional columns will be ignored by <code>toxEval</code> and will not
